@@ -9,15 +9,23 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { login } from '../../redux/actions/user';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const dispatch = useDispatch();
+  const submitHandler = e => {
+    e.preventDefault();
+    dispatch(login(email, password));
+  };
   return (
     <Container h={'95vh'}>
       <VStack h={'full'} justifyContent={'center'} spacing={'16'}>
         <Heading children={'Welcome to Online Tuition'} />
-        <form style={{ width: '100%' }}>
+        <form onSubmit={submitHandler} style={{ width: '100%' }}>
           <Box my={'4'}>
             <FormLabel htmlFor="email" children="Email Address" />
             <Input
@@ -58,7 +66,8 @@ const Login = () => {
               <Link to={'/register'}>
                 <Button colorScheme="red" variant={'link'}>
                   Sign Up
-                </Button> {"  "}
+                </Button>{' '}
+                {'  '}
                 here
               </Link>
             </Box>
