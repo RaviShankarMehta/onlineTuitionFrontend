@@ -9,9 +9,12 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import engBook from '../../assets/images/engBook.jpg';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllCourses } from '../../redux/actions/cousre';
+import { toast } from 'react-hot-toast';
 
 const Course = ({
   views,
@@ -37,15 +40,19 @@ const Course = ({
       <Text noOfLines={2} />
       <HStack>
         <Text
+          // fontWeight={'bold'}
+          // textTransform={'uppercase'}
+          children={description}
+        />
+      </HStack>
+      <Text noOfLines={2} />
+      <HStack>
+        <Text
           fontWeight={'bold'}
           textTransform={'uppercase'}
-          children={'Creator'}
+          children={`Creator -`}
         />
-        <Text
-          fontWeight={'body'}
-          textTransform={'uppercase'}
-          children={'creator'}
-        />
+        <Text children={creator} />
       </HStack>
       <Heading
         textAlign={'center'}
@@ -55,7 +62,7 @@ const Course = ({
       />
       <Heading
         size={'xs'}
-        children={`Lectures - ${views}`}
+        children={`Views - ${views}`}
         textTransform={'uppercase'}
       />
       <Stack direction={['column', 'row']} alignItems={'center'}>
@@ -77,9 +84,11 @@ const Course = ({
 const Courses = () => {
   const [keyword, setKeyword] = useState('');
   const [category, setCategory] = useState('');
-  const addToPlayListHandler =()=>{
-    console.log("addToPlayListHandler")
-  }
+
+  const dispatch = useDispatch();
+  const addToPlayListHandler = courseId => {
+    console.log('addToPlayListHandler', courseId);
+  };
   const categories = [
     'Hindi',
     'English',
@@ -88,6 +97,16 @@ const Courses = () => {
     'Chemistry',
     'History',
   ];
+
+  const { loading, courses, error } = useSelector(state => state.course);
+  useEffect(() => {
+    dispatch(getAllCourses(category, keyword));
+
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+  }, [dispatch, error, category, keyword]);
   return (
     <Container minH={'95vh'} maxW={'container.lg'} paddingY={'8'}>
       <Heading children="All Courses" m={'8'} />
@@ -116,17 +135,24 @@ const Courses = () => {
         justifyContent={['flex-start', 'space-evenly']}
         alignItems={['center', 'flex-start']}
       >
-        <Course
-          title={'Sample1'}
-          description={'Sample'}
-          views={23}
-        //   src={engBook}
-          imageSrc={engBook}
-          id={'Sample1'}
-          creator={'sample boy1'}
-          lectureCount={2}
-          addToPlayListHandler={addToPlayListHandler}
-        />
+        {courses.length > 0 ? (
+          courses.map(item => (
+            <Course
+              key={item._id}
+              title={item.title}
+              description={item.description}
+              views={item.views}
+              //   src={engBook}
+              imageSrc={item.poster.url}
+              id={item._id}
+              creator={item.createdBy}
+              lectureCount={item.numOfVideos}
+              addToPlayListHandler={addToPlayListHandler}
+            />
+          ))
+        ) : (
+          <Heading children="Courses not found" />
+        )}
       </Stack>
     </Container>
   );
