@@ -23,31 +23,14 @@ import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { fileUploadCss } from '../Auth/Register';
 
-const Profile = () => {
-  const user = {
-    name: 'Ravi',
-    email: 'ravi@yopmail.com',
-    createdAt: String(new Date().toISOString()),
-    role: 'user',
-    subscription: {
-      status: 'active',
-    },
-    playlist: [
-      {
-        course: 'sldkjfasl',
-        poster:
-          'https://www.shutterstock.com/image-photo/students-using-laptops-digital-tablets-260nw-218151253.jpg',
-      },
-    ],
-  };
-
+const Profile = ({ user }) => {
   const removeFromPlaylistHandler = id => {
-    alert('removed');
+    console.log(id);
   };
 
   const changeImageSubmitHandler = (e, image) => {
-    e.preventDefault()
-    alert('change photo')
+    e.preventDefault();
+    console.log(image);
   };
 
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -62,7 +45,7 @@ const Profile = () => {
         padding={'8'}
       >
         <VStack>
-          <Avatar boxSize={'48'} />
+          <Avatar boxSize={'48'} src={user.avatar.url} />
           <Button onClick={onOpen} colorScheme="red" variant={'ghost'}>
             Change Photo
           </Button>
@@ -83,7 +66,7 @@ const Profile = () => {
           {user.role !== 'admin' && (
             <HStack>
               <Text children={'Subscription'} fontWeight={'bold'} />
-              {user.subscription.status === 'active' ? (
+              {user.subscription && user.subscription.status === 'active' ? (
                 <Button color={'red.500'} variant={'unstyled'}>
                   Cancel Subscription
                 </Button>
@@ -156,11 +139,11 @@ function ChangePhotoBox({ isOpen, onClose, changeImageSubmitHandler }) {
       setImage(file);
     };
   };
- const closeHandler =()=>{
+  const closeHandler = () => {
     onClose();
-    setImagePrev('')
-    setImage('')
- }
+    setImagePrev('');
+    setImage('');
+  };
   return (
     <Modal isOpen={isOpen} onClose={closeHandler}>
       <ModalOverlay backdropFilter={'blur(10px)'} />
