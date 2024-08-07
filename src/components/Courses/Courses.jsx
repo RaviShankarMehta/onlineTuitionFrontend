@@ -11,7 +11,6 @@ import {
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import engBook from '../../assets/images/engBook.jpg';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllCourses } from '../../redux/actions/cousre';
 import { toast } from 'react-hot-toast';
@@ -118,7 +117,7 @@ const Courses = () => {
       toast.success(message);
       dispatch({ type: 'clearError' });
     }
-  }, [dispatch, error, category, keyword]);
+  }, [dispatch, error, message, category, keyword]);
   return (
     <Container minH={'95vh'} maxW={'container.lg'} paddingY={'8'}>
       <Heading children="All Courses" m={'8'} />
