@@ -38,7 +38,6 @@ function App() {
   );
   const dispatch = useDispatch();
   useEffect(() => {
-    console.log('asddsfdfsdfsd');
     if (error) {
       toast.error(error);
       dispatch({ type: 'clearError' });
@@ -49,9 +48,9 @@ function App() {
       dispatch({ type: 'clearMessage' });
     }
   }, [dispatch, error, message]);
-  useEffect(() => {
-    dispatch(loadUser());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(loadUser());
+  // }, [dispatch]);
   return (
     <Router>
       {loading ? (
