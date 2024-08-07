@@ -14,11 +14,22 @@ export const courseReducer = createReducer(
       state.loading = false;
       state.error = action.payload;
     },
-    // clearError: state => {
-    //   state.error = null;
-    // },
-    // clearMessage: state => {
-    //   state.message = null;
-    // },
+    addToPlaylistRequest: state => {
+      state.loading = true;
+    },
+    addToPlaylistSuccess: (state, action) => {
+      state.loading = false;
+      state.courses = action.payload;
+    },
+    addToPlaylistFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    clearError: state => {
+      state.error = null;
+    },
+    clearMessage: state => {
+      state.message = null;
+    },
   }
 );

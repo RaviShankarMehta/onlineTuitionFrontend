@@ -132,5 +132,16 @@ export const profileReducer = createReducer(
     clearMessage: state => {
       state.message = null;
     },
+    removeFromPlaylistRequest: state => {
+      state.loading = true;
+    },
+    removeFromPlaylistSuccess: (state, action) => {
+      state.loading = false;
+      state.courses = action.payload;
+    },
+    removeFromPlaylistFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   }
 );

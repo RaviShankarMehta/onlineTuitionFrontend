@@ -106,3 +106,46 @@ export const updateProfilePicture = formdata => async dispatch => {
     });
   }
 };
+
+export const addToPlaylist = id => async dispatch => {
+  try {
+    console.log('ididididid', id);
+    dispatch({ type: 'addToPlaylistRequest' });
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+    };
+    const { data } = await axios.post(
+      `${server}/addToPlaylist`,
+      { id },
+      config
+    );
+    dispatch({ type: 'addToPlaylistSuccess', payload: data.message });
+  } catch (error) {
+    dispatch({
+      type: 'addToPlaylistFail',
+      payload: error.response.data.message,
+    });
+  }
+};
+export const removeFromPlaylist = id => async dispatch => {
+  try {
+    dispatch({ type: 'removeFromPlaylistRequest' });
+    const config = {
+      withCredentials: true,
+    };
+    const { data } = await axios.delete(
+      `${server}/removeFromPlaylist?id=${id}`,
+
+      config
+    );
+    dispatch({ type: 'removeFromPlaylistSuccess', payload: data.message });
+  } catch (error) {
+    dispatch({
+      type: 'removeFromPlaylistFail',
+      payload: error.response.data.message,
+    });
+  }
+};

@@ -46,6 +46,7 @@ export const loadUser = () => async dispatch => {
     dispatch({ type: 'loadUserFail', payload: error.response.data.message });
   }
 };
+
 export const logout = () => async dispatch => {
   try {
     dispatch({ type: 'logoutRequest' });

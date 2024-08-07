@@ -22,17 +22,22 @@ import React, { useEffect, useState } from 'react';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { fileUploadCss } from '../Auth/Register';
-import { updateProfilePicture } from '../../redux/actions/profile';
+import {
+  removeFromPlaylist,
+  updateProfilePicture,
+} from '../../redux/actions/profile';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadUser } from '../../redux/actions/user';
 import { toast } from 'react-hot-toast';
 
 const Profile = ({ user }) => {
-  const removeFromPlaylistHandler = id => {
-    console.log(id);
-  };
   const dispatch = useDispatch();
   const { loading, message, error } = useSelector(state => state.profile);
+  const removeFromPlaylistHandler = async id => {
+    console.log(id);
+    await dispatch(removeFromPlaylist(id));
+    dispatch(loadUser());
+  };
   const changeImageSubmitHandler = async (e, image) => {
     e.preventDefault();
     const myForm = new FormData();
@@ -123,7 +128,10 @@ const Profile = ({ user }) => {
                     Watch Now
                   </Button>
                 </Link>
-                <Button onClick={() => removeFromPlaylistHandler(e.id)}>
+                <Button
+                  isLoading={loading}
+                  onClick={() => removeFromPlaylistHandler(e.course)}
+                >
                   <RiDeleteBin7Fill />
                 </Button>
               </HStack>

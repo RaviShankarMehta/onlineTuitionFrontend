@@ -15,6 +15,8 @@ import engBook from '../../assets/images/engBook.jpg';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllCourses } from '../../redux/actions/cousre';
 import { toast } from 'react-hot-toast';
+import { addToPlaylist } from '../../redux/actions/profile';
+import { loadUser } from '../../redux/actions/user';
 
 const Course = ({
   views,
@@ -25,6 +27,7 @@ const Course = ({
   creator,
   description,
   lectureCount,
+  loading,
 }) => {
   return (
     <VStack className="course" alignItems={['center', 'flex-start']}>
@@ -70,6 +73,7 @@ const Course = ({
           <Button colorScheme={'red'}> Watch Now </Button>
         </Link>
         <Button
+          isLoading={loading}
           variant={'ghost'}
           colorScheme={'red'}
           onClick={() => addToPlayListHandler(id)}
@@ -86,8 +90,10 @@ const Courses = () => {
   const [category, setCategory] = useState('');
 
   const dispatch = useDispatch();
-  const addToPlayListHandler = courseId => {
-    console.log('addToPlayListHandler', courseId);
+  const addToPlayListHandler = async courseId => {
+    // console.log('addToPlayListHandler', courseId);
+    await dispatch(addToPlaylist(courseId));
+    dispatch(loadUser);
   };
   const categories = [
     'Hindi',
@@ -98,12 +104,18 @@ const Courses = () => {
     'History',
   ];
 
-  const { loading, courses, error } = useSelector(state => state.course);
+  const { loading, courses, error, message } = useSelector(
+    state => state.course
+  );
   useEffect(() => {
     dispatch(getAllCourses(category, keyword));
 
     if (error) {
       toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+    if (message) {
+      toast.success(message);
       dispatch({ type: 'clearError' });
     }
   }, [dispatch, error, category, keyword]);
@@ -135,19 +147,19 @@ const Courses = () => {
         justifyContent={['flex-start', 'space-evenly']}
         alignItems={['center', 'flex-start']}
       >
-        {courses.length > 0 ? (
+        {Array.isArray(courses) && courses.length > 0 ? (
           courses.map(item => (
             <Course
               key={item._id}
               title={item.title}
               description={item.description}
               views={item.views}
-              //   src={engBook}
               imageSrc={item.poster.url}
               id={item._id}
               creator={item.createdBy}
               lectureCount={item.numOfVideos}
               addToPlayListHandler={addToPlayListHandler}
+              loading={loading}
             />
           ))
         ) : (
