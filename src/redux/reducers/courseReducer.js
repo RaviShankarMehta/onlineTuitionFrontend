@@ -14,6 +14,17 @@ export const courseReducer = createReducer(
       state.loading = false;
       state.error = action.payload;
     },
+    getCoursesRequest: state => {
+      state.loading = true;
+    },
+    getCoursesSuccess: (state, action) => {
+      state.loading = false;
+      state.lectures = action.payload;
+    },
+    getCoursesFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
     addToPlaylistRequest: state => {
       state.loading = true;
     },
