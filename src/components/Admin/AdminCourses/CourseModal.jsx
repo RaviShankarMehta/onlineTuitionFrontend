@@ -20,12 +20,13 @@ import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { fileUploadCss } from '../../Auth/Register';
 
 const CourseModal = ({
+  loading,
   isOpen,
   onClose,
   id,
-  deleteHandler,
+  deleteButtonHandler,
   courseTitle,
-  lectures = [1, 2, 3, 4],
+  lectures = [],
   addLectureHandler,
 }) => {
   const [title, setTitle] = useState('');
@@ -70,15 +71,16 @@ const CourseModal = ({
               </Box>
               <Heading children={'Lecture'} size={'lg'} />
 
-              {lectures.map((item ,i)=> (
+              {lectures.map((item, i) => (
                 <VideoCard
-                key={i}
-                  title="Hindi intro"
-                  description="This is a intro lecture ,where you will know the basic of hindi grammer"
-                  num={i+1}
-                  lectureId="sjdklfjsdlakjfalks"
+                  key={i}
+                  title={item.title}
+                  description={item.description}
+                  num={i + 1}
+                  lectureId={item._id}
                   courseId={id}
-                  deleteHandler={deleteHandler}
+                  deleteButtonHandler={deleteButtonHandler}
+                  isLoading={loading}
                 />
               ))}
             </Box>
@@ -125,7 +127,12 @@ const CourseModal = ({
                       src="videoPrev"
                     ></video>
                   )}
-                  <Button w={'full'} colorScheme="red" type="submit">
+                  <Button
+                    isLoading={loading}
+                    w={'full'}
+                    colorScheme="red"
+                    type="submit"
+                  >
                     Upload
                   </Button>
                 </VStack>
@@ -149,7 +156,7 @@ function VideoCard({
   num,
   lectureId,
   courseId,
-  deleteHandler,
+  deleteButtonHandler,
 }) {
   return (
     <Stack
@@ -166,7 +173,7 @@ function VideoCard({
       </Box>
       <Button
         color={'red.600'}
-        onClick={() => deleteHandler(courseId, lectureId)}
+        onClick={() => deleteButtonHandler(courseId, lectureId)}
       >
         <RiDeleteBin7Fill />
       </Button>

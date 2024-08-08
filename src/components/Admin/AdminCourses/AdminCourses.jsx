@@ -15,39 +15,69 @@ import {
   Tr,
   useDisclosure,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import cursor from '../../../assets/images/curser.png';
 import SideBar from '../SideBar';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import CourseModal from './CourseModal';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  getAllCourses,
+  getCoursesLectures,
+} from '../../../redux/actions/cousre';
+import { deleteCoursesLectures } from '../../../redux/actions/admin';
+import { toast } from 'react-hot-toast';
 const AdminCourses = () => {
-  const courses = [
-    {
-      _id: 'sdkjalskdjflasdkjf',
-      title: 'Hindi Course',
-      category: 'Hindi ',
-      poster: {
-        url: 'https://m.media-amazon.com/images/I/71C12bKgYJL._AC_UF894,1000_QL80_.jpg',
-      },
-      createdBy: 'Ravi Shankar',
-      views: 123,
-      numOfVideos: 12,
-    },
-  ];
+  // const courses = [
+  //   {
+  //     _id: 'sdkjalskdjflasdkjf',
+  //     title: 'Hindi Course',
+  //     category: 'Hindi ',
+  //     poster: {
+  //       url: 'https://m.media-amazon.com/images/I/71C12bKgYJL._AC_UF894,1000_QL80_.jpg',
+  //     },
+  //     createdBy: 'Ravi Shankar',
+  //     views: 123,
+  //     numOfVideos: 12,
+  //   },
+  // ];
+
+  const { courses, lectures } = useSelector(state => state.course);
+  const { loading, error, message } = useSelector(state => state.admin);
+
+  const dispatch = useDispatch();
+
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const courseDetailsHandler = userId => {
+
+  const courseDetailsHandler = courseId => {
+    dispatch(getCoursesLectures(courseId));
     // lecture no 18 error was their
-    // onOpen;
+    onOpen();
   };
-  const deleteHandler = userId => {
-    alert(userId);
+  const deleteButtonHandler = courseId => {
+    dispatch(deleteCoursesLectures(courseId));
   };
+
   const deleteLectureHandler = ({ courseId, lectureId }) => {
     alert(courseId, lectureId);
   };
-  const addLectureHandler = (e,courseId,title,description,video) => {
-    e.preventDefault()
+
+  const addLectureHandler = (e, courseId, title, description, video) => {
+    e.preventDefault();
   };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+    if (message) {
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+    }
+    dispatch(getAllCourses());
+  }, [dispatch, error, message]);
+
   return (
     <Grid
       css={{
@@ -83,7 +113,7 @@ const AdminCourses = () => {
               {courses.map(item => (
                 <Row
                   courseDetailsHandler={courseDetailsHandler}
-                  deleteHandler={deleteHandler}
+                  deleteButtonHandler={deleteButtonHandler}
                   key={item._id}
                   item={item}
                 />
@@ -96,8 +126,10 @@ const AdminCourses = () => {
           onClose={onClose}
           id={'fsjdkjadsfkljasdfkljadsf'}
           courseTitle={'hindi course'}
-          deleteHandler={deleteLectureHandler}
+          deleteButtonHandler={deleteLectureHandler}
           addLectureHandler={addLectureHandler}
+          lectures={lectures}
+          loading={loading}
         />
       </Box>
       <SideBar />
@@ -105,7 +137,7 @@ const AdminCourses = () => {
   );
 };
 
-function Row({ item, courseDetailsHandler, deleteHandler }) {
+function Row({ item, courseDetailsHandler, deleteButtonHandler, loading }) {
   return (
     <Tr>
       <Td>#{item._id}</Td>
@@ -120,13 +152,18 @@ function Row({ item, courseDetailsHandler, deleteHandler }) {
       <Td isNumeric>
         <HStack justifyContent={'flex-end'}>
           <Button
+            isLoading={loading}
             onClick={() => courseDetailsHandler(item._id)}
             variant={'outline'}
             color={'red.500'}
           >
             View Lecture
           </Button>
-          <Button onClick={() => deleteHandler(item._id)} color={'red.600'}>
+          <Button
+            isLoading={loading}
+            onClick={() => deleteButtonHandler(item._id)}
+            color={'red.600'}
+          >
             <RiDeleteBin7Fill />
           </Button>
         </HStack>
