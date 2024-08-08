@@ -80,7 +80,7 @@ const CourseModal = ({
                   lectureId={item._id}
                   courseId={id}
                   deleteButtonHandler={deleteButtonHandler}
-                  isLoading={loading}
+                  loading={loading}
                 />
               ))}
             </Box>
@@ -141,7 +141,9 @@ const CourseModal = ({
           </Grid>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={handleClose}>Close</Button>
+          <Button isLoading={loading} onClick={handleClose}>
+            Close
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

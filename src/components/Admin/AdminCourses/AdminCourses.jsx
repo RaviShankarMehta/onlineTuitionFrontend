@@ -15,7 +15,7 @@ import {
   Tr,
   useDisclosure,
 } from '@chakra-ui/react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import cursor from '../../../assets/images/curser.png';
 import SideBar from '../SideBar';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
@@ -25,45 +25,49 @@ import {
   getAllCourses,
   getCoursesLectures,
 } from '../../../redux/actions/cousre';
-import { deleteCoursesLectures } from '../../../redux/actions/admin';
+import {
+  addLectures,
+  deleteCoursesLectures,
+  deleteLectures,
+} from '../../../redux/actions/admin';
 import { toast } from 'react-hot-toast';
-const AdminCourses = () => {
-  // const courses = [
-  //   {
-  //     _id: 'sdkjalskdjflasdkjf',
-  //     title: 'Hindi Course',
-  //     category: 'Hindi ',
-  //     poster: {
-  //       url: 'https://m.media-amazon.com/images/I/71C12bKgYJL._AC_UF894,1000_QL80_.jpg',
-  //     },
-  //     createdBy: 'Ravi Shankar',
-  //     views: 123,
-  //     numOfVideos: 12,
-  //   },
-  // ];
 
+const AdminCourses = () => {
   const { courses, lectures } = useSelector(state => state.course);
   const { loading, error, message } = useSelector(state => state.admin);
 
   const dispatch = useDispatch();
 
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const [courseId, setCourseId] = useState(''); // Corrected
+  const [courseTitle, setCourseTitle] = useState(''); // Corrected
 
-  const courseDetailsHandler = courseId => {
+  const courseDetailsHandler = (courseId, title) => {
     dispatch(getCoursesLectures(courseId));
-    // lecture no 18 error was their
+    console.log(courseId, 'courseId');
     onOpen();
+    setCourseId(courseId);
+    setCourseTitle(title);
   };
+
   const deleteButtonHandler = courseId => {
     dispatch(deleteCoursesLectures(courseId));
   };
 
-  const deleteLectureHandler = ({ courseId, lectureId }) => {
-    alert(courseId, lectureId);
+  const deleteLectureHandler = async (courseId, lectureId) => {
+    // alert(courseId, lectureId);
+    await dispatch(deleteLectures(courseId, lectureId));
+    dispatch(getCoursesLectures(courseId));
   };
 
-  const addLectureHandler = (e, courseId, title, description, video) => {
+  const addLectureHandler = async (e, courseId, title, description, video) => {
     e.preventDefault();
+    const myForm = new FormData();
+    myForm.append('title', title);
+    myForm.append('description', description);
+    myForm.append('file', video);
+    await dispatch(addLectures(courseId, myForm));
+    dispatch(getCoursesLectures(courseId));
   };
 
   useEffect(() => {
@@ -116,6 +120,7 @@ const AdminCourses = () => {
                   deleteButtonHandler={deleteButtonHandler}
                   key={item._id}
                   item={item}
+                  loading={loading}
                 />
               ))}
             </Tbody>
@@ -124,8 +129,8 @@ const AdminCourses = () => {
         <CourseModal
           isOpen={isOpen}
           onClose={onClose}
-          id={'fsjdkjadsfkljasdfkljadsf'}
-          courseTitle={'hindi course'}
+          id={courseId}
+          courseTitle={courseTitle}
           deleteButtonHandler={deleteLectureHandler}
           addLectureHandler={addLectureHandler}
           lectures={lectures}
@@ -142,7 +147,7 @@ function Row({ item, courseDetailsHandler, deleteButtonHandler, loading }) {
     <Tr>
       <Td>#{item._id}</Td>
       <Td>
-        <Image src={'item.poster.url'} />
+        <Image src={item.poster.url} /> {/* Corrected */}
       </Td>
       <Td>{item.title}</Td>
       <Td textTransform={'uppercase'}>{item.category}</Td>
@@ -153,7 +158,7 @@ function Row({ item, courseDetailsHandler, deleteButtonHandler, loading }) {
         <HStack justifyContent={'flex-end'}>
           <Button
             isLoading={loading}
-            onClick={() => courseDetailsHandler(item._id)}
+            onClick={() => courseDetailsHandler(item._id, item.title)}
             variant={'outline'}
             color={'red.500'}
           >
